@@ -33,4 +33,8 @@ for ip in ips:
 
     data = response.json()["data"]
     score = data["abuseConfidenceScore"]
-    print(ip, "| score:", score, "| country:", data["countryCode"], "| reports:", data["totalReports"])
+
+    if score >= 25:
+        print("SUSPICIOUS", ip, "| score:", score, "| country:", data["countryCode"], "| reports:", data["totalReports"])
+    else:
+        print(ip, "| score:", score, "| country:", data["countryCode"], "| reports:", data["totalReports"])
