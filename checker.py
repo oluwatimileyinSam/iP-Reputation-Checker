@@ -10,17 +10,27 @@ if api_key:
 else:
     print("Key not found")
 
-url = "https://api.abuseipdb.com/api/v2/check"
+with open("ips.txt") as f:
+    ips = [line.strip() for line in f if line.strip()]
 
-querystring = {
-    "ipAddress": "181.215.65.37",
-    "maxAgeInDays": "90"
-    }
+url = "https://api.abuseipdb.com/api/v2/check"
 
 headers = {
     "Accept": "application/json",
     "Key": api_key
 }
 
-response = requests.get(url, headers=headers, params=querystring)
-print(response.text)
+for ip in ips:
+    querystring = {
+        "ipAddress": ip,
+        "maxAgeInDays": "90"
+    }
+    response = requests.get(url, headers=headers, params=querystring)
+
+    if response.status_code != 200:
+        print(ip, "-> request failed:", response.status_code)
+        continue
+
+    data = response.json()["data"]
+    score = data["abuseConfidenceScore"]
+    print(ip, "| score:", score, "| country:", data["countryCode"], "| reports:", data["totalReports"])
